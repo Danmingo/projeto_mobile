@@ -4,8 +4,11 @@ import 'package:projeto_mobile/services/filme_scope.dart';
 import 'package:projeto_mobile/services/filme_service.dart';
 
 /// Tela de celular alta o bastante para o formulário inteiro caber sem rolar.
-void usarTelaGrande(WidgetTester tester) {
-  tester.view.physicalSize = const Size(1080, 3200);
+///
+/// A fonte de teste desenha cada letra como um quadrado, mais larga que a
+/// real; telas com títulos longos na mesma linha precisam de [largura] maior.
+void usarTelaGrande(WidgetTester tester, {double largura = 540}) {
+  tester.view.physicalSize = Size(largura * 2, 3200);
   tester.view.devicePixelRatio = 2;
   addTearDown(tester.view.reset);
 }
