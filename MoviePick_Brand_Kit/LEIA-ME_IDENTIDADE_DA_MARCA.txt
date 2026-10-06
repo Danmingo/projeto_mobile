@@ -1,0 +1,40 @@
+MoviePick — Kit de Identidade Visual
+
+IDENTIDADE
+- Símbolos principais: pipoca, claquete e rolo de filme.
+- Nome da marca: MoviePick.
+- "Movie" utiliza tom azul-marinho/escuro.
+- "Pick" utiliza azul vivo.
+- Cores complementares: vermelho e branco na pipoca; amarelo/dourado nos grãos.
+- Estilo visual: moderno, amigável e relacionado a cinema/entretenimento.
+
+ARQUIVOS
+01_logo_principal/
+- movepick_logo_horizontal.png
+  Uso indicado: telas de abertura, cabeçalhos, apresentações e materiais com espaço horizontal.
+
+02_logos_app/
+- movepick_logo_app_azul.png
+  Uso indicado: splash screen, divulgação e fundos claros/azuis.
+- movepick_logo_app_claro.png
+  Uso indicado: fundos claros.
+- movepick_logo_app_escuro.png
+  Uso indicado: dark mode e fundos escuros.
+
+03_icones/
+- movepick_icone_azul.png
+  Uso indicado: ícone visual sem o nome da marca.
+- movepick_icone_escuro.png
+  Uso indicado: dark mode ou fundos escuros.
+
+BOAS PRÁTICAS
+- Não esticar ou deformar as imagens.
+- Manter proporção original.
+- Não alterar individualmente as cores dos elementos.
+- Evitar fundos que reduzam o contraste.
+- Preferir a versão clara/azul em interfaces claras.
+- Preferir a versão escura em interfaces escuras.
+- Manter espaço livre ao redor da logo.
+- Usar a mesma linguagem visual em telas, splash screen e materiais do projeto.
+
+Este pacote foi organizado para manter consistência visual no MoviePick.

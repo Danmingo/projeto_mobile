@@ -1,0 +1,8 @@
+MoviePick — Arquivos PNG e dimensões
+
+01_logo_principal/movepick_logo_horizontal.png — 814x635px — modo RGBA
+02_logos_app/movepick_logo_app_azul.png — 675x632px — modo RGBA
+02_logos_app/movepick_logo_app_claro.png — 317x330px — modo RGBA
+02_logos_app/movepick_logo_app_escuro.png — 312x319px — modo RGBA
+03_icones/movepick_icone_azul.png — 330x311px — modo RGBA
+03_icones/movepick_icone_escuro.png — 310x365px — modo RGBA
