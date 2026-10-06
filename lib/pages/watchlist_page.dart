@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
 
-import '../models/movie.dart';
+import '../services/filme_scope.dart';
+import '../widgets/acoes_filme.dart';
+import 'detalhes_filme_page.dart';
 
 class WatchlistPage extends StatelessWidget {
-  const WatchlistPage({
-    required this.movies,
-    required this.onToggleWatchlist,
-    super.key,
-  });
-
-  final List<Movie> movies;
-  final ValueChanged<Movie> onToggleWatchlist;
+  const WatchlistPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final watchlist = movies.where((movie) => movie.inWatchlist).toList();
+    final watchlist = FilmeScope.of(context).filmes
+        .where((filme) => filme.naMinhaLista)
+        .toList();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Minha Lista')),
@@ -25,15 +22,20 @@ class WatchlistPage extends StatelessWidget {
               itemCount: watchlist.length,
               separatorBuilder: (_, index) => const SizedBox(height: 8),
               itemBuilder: (context, index) {
-                final movie = watchlist[index];
+                final filme = watchlist[index];
                 return Card(
                   child: ListTile(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => DetalhesFilmePage(filme: filme),
+                      ),
+                    ),
                     leading: const Icon(Icons.bookmark),
-                    title: Text(movie.title),
-                    subtitle: Text('${movie.genre} • ${movie.year}'),
+                    title: Text(filme.titulo),
+                    subtitle: Text('${filme.genero} • ${filme.ano}'),
                     trailing: IconButton(
                       tooltip: 'Remover da Minha Lista',
-                      onPressed: () => onToggleWatchlist(movie),
+                      onPressed: () => alternarMinhaLista(context, filme),
                       icon: const Icon(Icons.bookmark_remove_outlined),
                     ),
                   ),

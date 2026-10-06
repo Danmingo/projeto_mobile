@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../models/movie.dart';
+import '../services/filme_scope.dart';
+import 'detalhes_filme_page.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({
-    required this.movies,
-    required this.onViewAll,
-    required this.onDraw,
-    super.key,
-  });
+  const HomePage({required this.onViewAll, required this.onDraw, super.key});
 
-  final List<Movie> movies;
   final VoidCallback onViewAll;
   final VoidCallback onDraw;
 
@@ -18,9 +13,10 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     const purple = Color(0xFF6C42C5);
-    final recentMovies = movies.reversed.take(3).toList();
-    final watchlistCount = movies.where((movie) => movie.inWatchlist).length;
-    final watchedCount = movies.where((movie) => movie.watched).length;
+    final filmes = FilmeScope.of(context).filmes;
+    final recentes = filmes.reversed.take(3).toList();
+    final watchlistCount = filmes.where((f) => f.naMinhaLista).length;
+    final watchedCount = filmes.where((f) => f.assistido).length;
 
     return Scaffold(
       body: SafeArea(
@@ -128,7 +124,7 @@ class HomePage extends StatelessWidget {
                         Expanded(
                           child: _SummaryCard(
                             label: 'Filmes cadastrados',
-                            value: '${movies.length}',
+                            value: '${filmes.length}',
                             icon: Icons.movie_outlined,
                           ),
                         ),
@@ -167,17 +163,22 @@ class HomePage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 6),
-                    if (recentMovies.isEmpty)
+                    if (recentes.isEmpty)
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 20),
                         child: Text('Nenhum filme cadastrado ainda.'),
                       )
                     else
-                      ...recentMovies.map(
-                        (movie) => _MovieTile(
-                          title: movie.title,
-                          subtitle: '${movie.genre} • ${movie.year}',
-                          watched: movie.watched,
+                      ...recentes.map(
+                        (filme) => _MovieTile(
+                          title: filme.titulo,
+                          subtitle: '${filme.genero} • ${filme.ano}',
+                          watched: filme.assistido,
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (_) => DetalhesFilmePage(filme: filme),
+                            ),
+                          ),
                         ),
                       ),
                   ],
@@ -232,11 +233,13 @@ class _MovieTile extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.watched,
+    required this.onTap,
   });
 
   final String title;
   final String subtitle;
   final bool watched;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -244,6 +247,7 @@ class _MovieTile extends StatelessWidget {
       elevation: 0,
       margin: const EdgeInsets.only(bottom: 10),
       child: ListTile(
+        onTap: onTap,
         leading: CircleAvatar(
           backgroundColor: const Color(0xFFE9E1FA),
           child: Icon(
