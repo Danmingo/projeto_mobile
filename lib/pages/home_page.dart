@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+import '../models/movie.dart';
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
+class HomePage extends StatelessWidget {
+  const HomePage({
+    required this.movies,
+    required this.onViewAll,
+    required this.onDraw,
+    super.key,
+  });
 
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
+  final List<Movie> movies;
+  final VoidCallback onViewAll;
+  final VoidCallback onDraw;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     const purple = Color(0xFF6C42C5);
+    final recentMovies = movies.reversed.take(3).toList();
+    final watchlistCount = movies.where((movie) => movie.inWatchlist).length;
+    final watchedCount = movies.where((movie) => movie.watched).length;
 
     return Scaffold(
       body: SafeArea(
@@ -91,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(width: 12),
                           OutlinedButton(
-                            onPressed: () {},
+                            onPressed: onDraw,
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.white,
                               side: const BorderSide(color: Colors.white70),
@@ -116,28 +123,28 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Row(
+                    Row(
                       children: [
                         Expanded(
                           child: _SummaryCard(
                             label: 'Filmes cadastrados',
-                            value: '28',
+                            value: '${movies.length}',
                             icon: Icons.movie_outlined,
                           ),
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: _SummaryCard(
                             label: 'Na minha lista',
-                            value: '8',
+                            value: '$watchlistCount',
                             icon: Icons.bookmark_border_rounded,
                           ),
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Expanded(
                           child: _SummaryCard(
                             label: 'Assistidos',
-                            value: '15',
+                            value: '$watchedCount',
                             icon: Icons.check_circle_outline_rounded,
                           ),
                         ),
@@ -154,61 +161,31 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: onViewAll,
                           child: const Text('Ver todos'),
                         ),
                       ],
                     ),
                     const SizedBox(height: 6),
-                    const _MovieTile(
-                      title: 'Interestelar',
-                      subtitle: 'Ficção Científica • 2014',
-                      icon: Icons.public_rounded,
-                    ),
-                    const _MovieTile(
-                      title: 'O Batman',
-                      subtitle: 'Ação • 2022',
-                      icon: Icons.nightlight_round,
-                    ),
+                    if (recentMovies.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 20),
+                        child: Text('Nenhum filme cadastrado ainda.'),
+                      )
+                    else
+                      ...recentMovies.map(
+                        (movie) => _MovieTile(
+                          title: movie.title,
+                          subtitle: '${movie.genre} • ${movie.year}',
+                          watched: movie.watched,
+                        ),
+                      ),
                   ],
                 ),
               ),
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: purple,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Início',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.movie_outlined),
-            label: 'Filmes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shuffle_rounded),
-            label: 'Sortear',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark_border_rounded),
-            label: 'Lista',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline_rounded),
-            label: 'Perfil',
-          ),
-        ],
       ),
     );
   }
@@ -254,12 +231,12 @@ class _MovieTile extends StatelessWidget {
   const _MovieTile({
     required this.title,
     required this.subtitle,
-    required this.icon,
+    required this.watched,
   });
 
   final String title;
   final String subtitle;
-  final IconData icon;
+  final bool watched;
 
   @override
   Widget build(BuildContext context) {
@@ -269,11 +246,16 @@ class _MovieTile extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: const Color(0xFFE9E1FA),
-          child: Icon(icon, color: Theme.of(context).colorScheme.primary),
+          child: Icon(
+            watched ? Icons.check_rounded : Icons.movie_outlined,
+            color: Theme.of(context).colorScheme.primary,
+          ),
         ),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right_rounded),
+        trailing: watched
+            ? const Icon(Icons.check_circle, color: Colors.green)
+            : const Icon(Icons.chevron_right_rounded),
       ),
     );
   }

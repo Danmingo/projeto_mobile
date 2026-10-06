@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'pages/home_page.dart';
 import 'pages/login_page.dart';
+import 'pages/main_page.dart';
+import 'pages/register_page.dart';
 
 void main() {
   runApp(const MoviePickApp());
@@ -26,7 +27,8 @@ class MoviePickApp extends StatelessWidget {
       initialRoute: '/login',
       routes: {
         '/login': (_) => const LoginPage(),
-        '/home': (_) => const HomePage(),
+        '/home': (_) => const MainPage(),
+        '/cadastro': (_) => const RegisterPage(),
       },
     );
   }

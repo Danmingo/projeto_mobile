@@ -63,11 +63,8 @@ class _LoginPageState extends State<LoginPage> {
                     tooltip: _obscurePassword
                         ? 'Mostrar senha'
                         : 'Esconder senha',
-                    onPressed: () {
-                      setState(() {
-                        _obscurePassword = !_obscurePassword;
-                      });
-                    },
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
                     icon: Icon(
                       _obscurePassword
                           ? Icons.visibility_outlined
@@ -79,7 +76,13 @@ class _LoginPageState extends State<LoginPage> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Recuperação de senha será implementada posteriormente.',
+                      ),
+                    ),
+                  ),
                   child: const Text('Esqueceu sua senha?'),
                 ),
               ),
@@ -104,18 +107,21 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 22),
-              Text.rich(
-                const TextSpan(
-                  text: 'Não tem uma conta? ',
-                  children: [
-                    TextSpan(
-                      text: 'Cadastre-se',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
+              TextButton(
+                onPressed: () => Navigator.pushNamed(context, '/cadastro'),
+                child: Text.rich(
+                  TextSpan(
+                    text: 'Não tem uma conta? ',
+                    style: TextStyle(color: Colors.grey.shade700),
+                    children: const [
+                      TextSpan(
+                        text: 'Cadastre-se',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey.shade700),
               ),
             ],
           ),
