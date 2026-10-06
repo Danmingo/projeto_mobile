@@ -2,43 +2,39 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../models/movie.dart';
+import '../services/filme_scope.dart';
 
 class DrawPage extends StatefulWidget {
-  const DrawPage({required this.movies, super.key});
-
-  final List<Movie> movies;
+  const DrawPage({super.key});
 
   @override
   State<DrawPage> createState() => _DrawPageState();
 }
 
 class _DrawPageState extends State<DrawPage> {
-  Movie? _drawnMovie;
+  /// Guarda só o id: se o filme for editado ou excluído, a tela acompanha.
+  String? _sorteadoId;
 
   void _draw() {
-    if (widget.movies.isEmpty) return;
+    final filmes = FilmeScope.ler(context).filmes;
+    if (filmes.isEmpty) return;
     setState(() {
-      _drawnMovie = widget.movies[Random().nextInt(widget.movies.length)];
+      _sorteadoId = filmes[Random().nextInt(filmes.length)].id;
     });
   }
 
   @override
-  void didUpdateWidget(covariant DrawPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (_drawnMovie != null && !widget.movies.contains(_drawnMovie)) {
-      _drawnMovie = null;
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final service = FilmeScope.of(context);
+    final id = _sorteadoId;
+    final sorteado = id == null ? null : service.buscarPorId(id);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Sortear filme')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
-          child: widget.movies.isEmpty
+          child: service.filmes.isEmpty
               ? const Text(
                   'Cadastre pelo menos um filme para realizar o sorteio.',
                   textAlign: TextAlign.center,
@@ -48,20 +44,20 @@ class _DrawPageState extends State<DrawPage> {
                   children: [
                     const Icon(Icons.shuffle_rounded, size: 72),
                     const SizedBox(height: 24),
-                    if (_drawnMovie == null)
+                    if (sorteado == null)
                       const Text(
                         'Pronto para descobrir o próximo filme?',
                         textAlign: TextAlign.center,
                       )
                     else ...[
                       Text(
-                        _drawnMovie!.title,
+                        sorteado.titulo,
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
-                      Text('${_drawnMovie!.genre} • ${_drawnMovie!.year}'),
+                      Text('${sorteado.genero} • ${sorteado.ano}'),
                       const SizedBox(height: 24),
                     ],
                     FilledButton.icon(

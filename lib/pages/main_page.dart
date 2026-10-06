@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../models/movie.dart';
 import 'draw_page.dart';
 import 'home_page.dart';
-import 'movies_page.dart';
+import 'meus_filmes_page.dart';
 import 'profile_page.dart';
 import 'watchlist_page.dart';
 
@@ -17,7 +16,6 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
   final PageController _pageController = PageController();
-  final List<Movie> _movies = [];
 
   @override
   void dispose() {
@@ -34,18 +32,6 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  void _addMovie(Movie movie) => setState(() => _movies.add(movie));
-
-  void _removeMovie(Movie movie) => setState(() => _movies.remove(movie));
-
-  void _toggleWatchlist(Movie movie) {
-    setState(() => movie.inWatchlist = !movie.inWatchlist);
-  }
-
-  void _toggleWatched(Movie movie) {
-    setState(() => movie.watched = !movie.watched);
-  }
-
   @override
   Widget build(BuildContext context) {
     const purple = Color(0xFF6C42C5);
@@ -55,20 +41,12 @@ class _MainPageState extends State<MainPage> {
         controller: _pageController,
         onPageChanged: (index) => setState(() => _currentIndex = index),
         children: [
-          HomePage(
-            movies: _movies,
-            onViewAll: () => _goToPage(1),
-            onDraw: () => _goToPage(2),
-          ),
-          MoviesPage(
-            movies: _movies,
-            onAddMovie: _addMovie,
-            onRemoveMovie: _removeMovie,
-            onToggleWatchlist: _toggleWatchlist,
-            onToggleWatched: _toggleWatched,
-          ),
-          DrawPage(movies: _movies),
-          WatchlistPage(movies: _movies, onToggleWatchlist: _toggleWatchlist),
+          // Os filmes vêm do FilmeService (FilmeScope), compartilhado por
+          // todas as abas.
+          HomePage(onViewAll: () => _goToPage(1), onDraw: () => _goToPage(2)),
+          const MeusFilmesPage(),
+          const DrawPage(),
+          const WatchlistPage(),
           const ProfilePage(),
         ],
       ),
