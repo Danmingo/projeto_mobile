@@ -102,4 +102,17 @@ void main() {
     expect(find.byType(FilmeFormPage), findsNothing);
     expect(service.buscarPorId(original.id)!.titulo, original.titulo);
   });
+
+  testWidgets('editar mantém o filme na Minha Lista', (tester) async {
+    usarTelaGrande(tester);
+    final service = FilmeService.comExemplos();
+    final original = await service.alternarMinhaLista(service.filmes.first.id);
+    await abrirTela(tester, service, FilmeFormPage(filme: original));
+
+    await tester.enterText(_campo('campo-titulo'), 'Interestelar (2014)');
+    await tester.tap(find.text('Salvar alterações'));
+    await tester.pumpAndSettle();
+
+    expect(service.buscarPorId(original.id)!.naMinhaLista, isTrue);
+  });
 }

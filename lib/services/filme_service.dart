@@ -46,6 +46,22 @@ class FilmeService extends ChangeNotifier {
     _filmes.removeWhere((f) => f.id == id);
     notifyListeners();
   }
+
+  /// Coloca ou tira o filme da Minha Lista e devolve o filme atualizado.
+  Future<Filme> alternarMinhaLista(String id) =>
+      _alterar(id, (f) => f.copyWith(naMinhaLista: !f.naMinhaLista));
+
+  /// Marca o filme como assistido ou não assistido e devolve o atualizado.
+  Future<Filme> alternarAssistido(String id) =>
+      _alterar(id, (f) => f.copyWith(assistido: !f.assistido));
+
+  Future<Filme> _alterar(String id, Filme Function(Filme) mudanca) async {
+    final atual = buscarPorId(id);
+    if (atual == null) throw ArgumentError('Filme $id não encontrado');
+    final novo = mudanca(atual);
+    await atualizar(novo);
+    return novo;
+  }
 }
 
 const filmesDeExemplo = [

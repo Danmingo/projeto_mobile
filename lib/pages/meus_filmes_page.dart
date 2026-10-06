@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/filme.dart';
 import '../services/filme_scope.dart';
 import '../theme/app_colors.dart';
+import '../widgets/acoes_filme.dart';
 import '../widgets/excluir_filme_dialog.dart';
 import '../widgets/poster_filme.dart';
 import 'detalhes_filme_page.dart';
@@ -130,8 +131,7 @@ class _MeusFilmesPageState extends State<MeusFilmesPage> {
                       filme: filmes[i],
                       onAbrir: () =>
                           _abrir(DetalhesFilmePage(filme: filmes[i])),
-                      onEditar: () => _abrir(FilmeFormPage(filme: filmes[i])),
-                      onExcluir: () => excluirFilme(context, filmes[i]),
+                      onAcao: (acao) => _executar(acao, filmes[i]),
                     ),
                   ),
           ),
@@ -139,22 +139,33 @@ class _MeusFilmesPageState extends State<MeusFilmesPage> {
       ),
     );
   }
+
+  void _executar(_Acao acao, Filme filme) {
+    switch (acao) {
+      case _Acao.minhaLista:
+        alternarMinhaLista(context, filme);
+      case _Acao.assistido:
+        alternarAssistido(context, filme);
+      case _Acao.editar:
+        _abrir(FilmeFormPage(filme: filme));
+      case _Acao.excluir:
+        excluirFilme(context, filme);
+    }
+  }
 }
 
-enum _Acao { editar, excluir }
+enum _Acao { minhaLista, assistido, editar, excluir }
 
 class _ItemFilme extends StatelessWidget {
   const _ItemFilme({
     required this.filme,
     required this.onAbrir,
-    required this.onEditar,
-    required this.onExcluir,
+    required this.onAcao,
   });
 
   final Filme filme;
   final VoidCallback onAbrir;
-  final VoidCallback onEditar;
-  final VoidCallback onExcluir;
+  final ValueChanged<_Acao> onAcao;
 
   @override
   Widget build(BuildContext context) {
@@ -201,6 +212,17 @@ class _ItemFilme extends StatelessWidget {
                             ),
                           ),
                         ],
+                        if (filme.naMinhaLista) ...[
+                          const SizedBox(width: 4),
+                          const Tooltip(
+                            message: 'Na Minha Lista',
+                            child: Icon(
+                              Icons.bookmark_rounded,
+                              size: 16,
+                              color: AppColors.roxo,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -224,13 +246,29 @@ class _ItemFilme extends StatelessWidget {
                 children: [
                   PopupMenuButton<_Acao>(
                     tooltip: 'Opções',
-                    onSelected: (acao) => switch (acao) {
-                      _Acao.editar => onEditar(),
-                      _Acao.excluir => onExcluir(),
-                    },
-                    itemBuilder: (_) => const [
-                      PopupMenuItem(value: _Acao.editar, child: Text('Editar')),
+                    onSelected: onAcao,
+                    itemBuilder: (_) => [
                       PopupMenuItem(
+                        value: _Acao.minhaLista,
+                        child: Text(
+                          filme.naMinhaLista
+                              ? 'Remover da Minha Lista'
+                              : 'Adicionar à Minha Lista',
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: _Acao.assistido,
+                        child: Text(
+                          filme.assistido
+                              ? 'Marcar como não assistido'
+                              : 'Marcar como assistido',
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: _Acao.editar,
+                        child: Text('Editar'),
+                      ),
+                      const PopupMenuItem(
                         value: _Acao.excluir,
                         child: Text(
                           'Excluir',

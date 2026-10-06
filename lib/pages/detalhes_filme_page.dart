@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/filme.dart';
 import '../services/filme_scope.dart';
 import '../theme/app_colors.dart';
+import '../widgets/acoes_filme.dart';
 import '../widgets/excluir_filme_dialog.dart';
 import '../widgets/poster_filme.dart';
 import 'filme_form_page.dart';
@@ -45,6 +46,34 @@ class _DetalhesFilmePageState extends State<DetalhesFilmePage> {
         backgroundColor: AppColors.roxo,
         foregroundColor: Colors.white,
         scrolledUnderElevation: 0,
+        actions: [
+          IconButton(
+            tooltip: filme.assistido
+                ? 'Marcar como não assistido'
+                : 'Marcar como assistido',
+            onPressed: atual == null
+                ? null
+                : () => alternarAssistido(context, filme),
+            icon: Icon(
+              filme.assistido
+                  ? Icons.check_circle_rounded
+                  : Icons.check_circle_outline_rounded,
+            ),
+          ),
+          IconButton(
+            tooltip: filme.naMinhaLista
+                ? 'Remover da Minha Lista'
+                : 'Adicionar à Minha Lista',
+            onPressed: atual == null
+                ? null
+                : () => alternarMinhaLista(context, filme),
+            icon: Icon(
+              filme.naMinhaLista
+                  ? Icons.bookmark_rounded
+                  : Icons.bookmark_border_rounded,
+            ),
+          ),
+        ],
       ),
       body: ListView(
         children: [
@@ -100,6 +129,11 @@ class _DetalhesFilmePageState extends State<DetalhesFilmePage> {
                           : Icons.schedule_rounded,
                       texto: filme.assistido ? 'Assistido' : 'Não assistido',
                     ),
+                    if (filme.naMinhaLista)
+                      const _Etiqueta(
+                        icone: Icons.bookmark_rounded,
+                        texto: 'Na Minha Lista',
+                      ),
                   ],
                 ),
                 const SizedBox(height: 24),

@@ -26,6 +26,7 @@ class Filme {
     required this.nota,
     this.sinopse = '',
     this.assistido = false,
+    this.naMinhaLista = false,
     this.poster,
   });
 
@@ -42,6 +43,9 @@ class Filme {
   final double nota;
   final String sinopse;
   final bool assistido;
+
+  /// Marcado para assistir depois (aba "Minha Lista").
+  final bool naMinhaLista;
 
   /// Bytes da imagem escolhida na galeria (em memória, como o resto da Parte 1).
   final Uint8List? poster;
@@ -62,6 +66,7 @@ class Filme {
     double? nota,
     String? sinopse,
     bool? assistido,
+    bool? naMinhaLista,
     Uint8List? poster,
   }) {
     return Filme(
@@ -74,6 +79,7 @@ class Filme {
       nota: nota ?? this.nota,
       sinopse: sinopse ?? this.sinopse,
       assistido: assistido ?? this.assistido,
+      naMinhaLista: naMinhaLista ?? this.naMinhaLista,
       poster: poster ?? this.poster,
     );
   }

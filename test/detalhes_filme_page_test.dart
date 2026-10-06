@@ -73,4 +73,21 @@ void main() {
     expect(find.byType(DetalhesFilmePage), findsOneWidget);
     expect(find.text('Interstellar'), findsOneWidget);
   });
+
+  testWidgets('botões do topo alternam Minha Lista e assistido', (
+    tester,
+  ) async {
+    await abrirDetalhesDoPrimeiro(tester);
+    final id = service.filmes.first.id;
+
+    await tester.tap(find.byTooltip('Adicionar à Minha Lista'));
+    await tester.pumpAndSettle();
+    expect(service.buscarPorId(id)!.naMinhaLista, isTrue);
+    expect(find.text('Na Minha Lista'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Marcar como não assistido'));
+    await tester.pumpAndSettle();
+    expect(service.buscarPorId(id)!.assistido, isFalse);
+    expect(find.text('Não assistido'), findsOneWidget);
+  });
 }

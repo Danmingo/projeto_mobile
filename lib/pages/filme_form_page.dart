@@ -86,6 +86,8 @@ class _FilmeFormPageState extends State<FilmeFormPage> {
       nota: ValidadoresFilme.lerNota(_nota.text)!,
       sinopse: _sinopse.text.trim(),
       assistido: _assistido,
+      // Não aparece no formulário: preserva o valor ao editar.
+      naMinhaLista: widget.filme?.naMinhaLista ?? false,
       poster: _poster,
     );
 

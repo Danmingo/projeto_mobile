@@ -125,4 +125,45 @@ void main() {
     expect(service.filmes, hasLength(filmesDeExemplo.length - 1));
     expect(find.text('Filme excluído com sucesso!'), findsOneWidget);
   });
+
+  Future<void> escolherNoMenu(
+    WidgetTester tester,
+    String titulo,
+    String acao,
+  ) async {
+    final item = find.ancestor(
+      of: find.text(titulo),
+      matching: find.byType(Card),
+    );
+    await tester.tap(
+      find.descendant(of: item, matching: find.byTooltip('Opções')),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text(acao));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('adiciona à Minha Lista pelo menu e avisa', (tester) async {
+    await abrirLista(tester);
+
+    await escolherNoMenu(tester, 'Shrek', 'Adicionar à Minha Lista');
+
+    final shrek = service.filmes.firstWhere((f) => f.titulo == 'Shrek');
+    expect(shrek.naMinhaLista, isTrue);
+    expect(find.text('"Shrek" adicionado à Minha Lista.'), findsOneWidget);
+    expect(find.byTooltip('Na Minha Lista'), findsOneWidget);
+
+    await escolherNoMenu(tester, 'Shrek', 'Remover da Minha Lista');
+    expect(service.buscarPorId(shrek.id)!.naMinhaLista, isFalse);
+  });
+
+  testWidgets('marca como assistido pelo menu', (tester) async {
+    await abrirLista(tester);
+
+    await escolherNoMenu(tester, 'Shrek', 'Marcar como assistido');
+
+    final shrek = service.filmes.firstWhere((f) => f.titulo == 'Shrek');
+    expect(shrek.assistido, isTrue);
+    expect(find.text('"Shrek" marcado como assistido.'), findsOneWidget);
+  });
 }

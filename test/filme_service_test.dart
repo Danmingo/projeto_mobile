@@ -69,4 +69,28 @@ void main() {
     expect(_rascunho.duracaoFormatada, '2h 35min');
     expect(_rascunho.copyWith(duracao: 90).duracaoFormatada, '1h 30min');
   });
+
+  test('alternarMinhaLista coloca e tira o filme da lista', () async {
+    final salvo = await service.adicionar(_rascunho);
+
+    final dentro = await service.alternarMinhaLista(salvo.id);
+    expect(dentro.naMinhaLista, isTrue);
+    expect(service.buscarPorId(salvo.id)!.naMinhaLista, isTrue);
+
+    final fora = await service.alternarMinhaLista(salvo.id);
+    expect(fora.naMinhaLista, isFalse);
+  });
+
+  test('alternarAssistido inverte o status de assistido', () async {
+    final salvo = await service.adicionar(_rascunho);
+
+    final assistido = await service.alternarAssistido(salvo.id);
+
+    expect(assistido.assistido, isTrue);
+    expect(service.buscarPorId(salvo.id)!.assistido, isTrue);
+  });
+
+  test('alternar um filme inexistente falha', () {
+    expect(() => service.alternarMinhaLista('nao-existe'), throwsArgumentError);
+  });
 }
