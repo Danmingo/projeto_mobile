@@ -25,6 +25,7 @@ class _DrawPageState extends State<DrawPage> {
   double _notaMinima = 0;
   String? _classificacaoMaxima;
   bool _incluirAssistidos = false;
+  bool _somenteMinhaLista = false;
   var _autovalidar = AutovalidateMode.disabled;
 
   @override
@@ -39,6 +40,7 @@ class _DrawPageState extends State<DrawPage> {
     notaMinima: _notaMinima,
     classificacaoMaxima: _classificacaoMaxima,
     incluirAssistidos: _incluirAssistidos,
+    somenteMinhaLista: _somenteMinhaLista,
   );
 
   void _limparFiltros() {
@@ -51,6 +53,7 @@ class _DrawPageState extends State<DrawPage> {
       _notaMinima = 0;
       _classificacaoMaxima = null;
       _incluirAssistidos = false;
+      _somenteMinhaLista = false;
       _autovalidar = AutovalidateMode.disabled;
     });
   }
@@ -186,6 +189,14 @@ class _DrawPageState extends State<DrawPage> {
                     value: _incluirAssistidos,
                     onChanged: (valor) =>
                         setState(() => _incluirAssistidos = valor),
+                  ),
+                  SwitchListTile(
+                    key: const ValueKey('campo-somente-minha-lista'),
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Somente filmes da Minha Lista'),
+                    value: _somenteMinhaLista,
+                    onChanged: (valor) =>
+                        setState(() => _somenteMinhaLista = valor),
                   ),
                 ],
               ),

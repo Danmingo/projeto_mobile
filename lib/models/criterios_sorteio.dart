@@ -9,6 +9,7 @@ class CriteriosSorteio {
     this.notaMinima = 0,
     this.classificacaoMaxima,
     this.incluirAssistidos = false,
+    this.somenteMinhaLista = false,
   });
 
   /// Gêneros aceitos; vazio aceita qualquer gênero.
@@ -26,6 +27,9 @@ class CriteriosSorteio {
 
   final bool incluirAssistidos;
 
+  /// Sorteia apenas entre os filmes guardados na Minha Lista.
+  final bool somenteMinhaLista;
+
   bool aceita(Filme filme) {
     final duracao = duracaoMaxima;
     final classificacao = classificacaoMaxima;
@@ -35,7 +39,8 @@ class CriteriosSorteio {
         (classificacao == null ||
             classificacoes.indexOf(filme.classificacao) <=
                 classificacoes.indexOf(classificacao)) &&
-        (incluirAssistidos || !filme.assistido);
+        (incluirAssistidos || !filme.assistido) &&
+        (!somenteMinhaLista || filme.naMinhaLista);
   }
 
   /// Filmes de [filmes] que podem ser sorteados.

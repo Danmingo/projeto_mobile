@@ -81,6 +81,18 @@ void main() {
     );
   });
 
+  testWidgets('filtra só os filmes da Minha Lista', (tester) async {
+    await service.alternarMinhaLista(
+      filmesDeExemplo.firstWhere((f) => f.titulo == 'Shrek').id,
+    );
+    await abrirSorteador(tester);
+
+    await tester.tap(find.text('Somente filmes da Minha Lista'));
+    await tester.pump();
+
+    expect(find.text('1 filme atende aos critérios'), findsOneWidget);
+  });
+
   testWidgets('filtra pela classificação indicativa', (tester) async {
     await abrirSorteador(tester);
 

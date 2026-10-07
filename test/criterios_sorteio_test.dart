@@ -66,6 +66,19 @@ void main() {
       ]);
     });
 
+    test('somenteMinhaLista aceita só os filmes da Minha Lista', () {
+      final filmes = [
+        for (final f in filmesDeExemplo)
+          f.titulo == 'Shrek' ? f.copyWith(naMinhaLista: true) : f,
+      ];
+      expect(
+        _titulos(
+          const CriteriosSorteio(somenteMinhaLista: true).filtrar(filmes),
+        ),
+        ['Shrek'],
+      );
+    });
+
     test('combina todos os critérios', () {
       expect(
         _filtrar(
