@@ -148,6 +148,9 @@ void main() {
 
     await tester.tap(find.text('Sortear'));
     await tester.pumpAndSettle();
+    // Espera o aviso "Filme cadastrado" sumir: ele cobre o botão de sortear.
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(FilledButton, 'Sortear filme'));
     await tester.pumpAndSettle();
 

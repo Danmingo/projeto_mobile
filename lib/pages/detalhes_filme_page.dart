@@ -5,6 +5,7 @@ import '../services/filme_scope.dart';
 import '../theme/app_colors.dart';
 import '../widgets/acoes_filme.dart';
 import '../widgets/excluir_filme_dialog.dart';
+import '../widgets/info_filme.dart';
 import '../widgets/poster_filme.dart';
 import 'filme_form_page.dart';
 
@@ -106,7 +107,7 @@ class _DetalhesFilmePageState extends State<DetalhesFilmePage> {
                   style: const TextStyle(color: Colors.white70),
                 ),
                 const SizedBox(height: 14),
-                _Nota(filme.nota),
+                NotaFilme(filme.nota),
               ],
             ),
           ),
@@ -119,18 +120,18 @@ class _DetalhesFilmePageState extends State<DetalhesFilmePage> {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    _Etiqueta(
+                    EtiquetaFilme(
                       icone: Icons.shield_outlined,
                       texto: filme.classificacaoFormatada,
                     ),
-                    _Etiqueta(
+                    EtiquetaFilme(
                       icone: filme.assistido
                           ? Icons.check_circle_outline_rounded
                           : Icons.schedule_rounded,
                       texto: filme.assistido ? 'Assistido' : 'Não assistido',
                     ),
                     if (filme.naMinhaLista)
-                      const _Etiqueta(
+                      const EtiquetaFilme(
                         icone: Icons.bookmark_rounded,
                         texto: 'Na Minha Lista',
                       ),
@@ -197,70 +198,6 @@ class _DetalhesFilmePageState extends State<DetalhesFilmePage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _Nota extends StatelessWidget {
-  const _Nota(this.nota);
-
-  final double nota;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppColors.roxoMedio,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.star_rounded, color: Colors.amber, size: 20),
-          const SizedBox(width: 4),
-          Text(
-            nota.toStringAsFixed(1).replaceAll('.', ','),
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Etiqueta extends StatelessWidget {
-  const _Etiqueta({required this.icone, required this.texto});
-
-  final IconData icone;
-  final String texto;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: AppColors.roxoClaro,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icone, size: 18, color: AppColors.roxo),
-          const SizedBox(width: 6),
-          Text(
-            texto,
-            style: const TextStyle(
-              color: AppColors.texto,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
       ),
     );
   }
