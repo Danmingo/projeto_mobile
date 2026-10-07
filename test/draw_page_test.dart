@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:projeto_mobile/pages/draw_page.dart';
+import 'package:projeto_mobile/pages/resultado_sorteio_page.dart';
 import 'package:projeto_mobile/services/filme_service.dart';
 
 import 'helpers.dart';
@@ -30,7 +31,9 @@ void main() {
     expect(find.text('5 filmes atendem aos critérios'), findsOneWidget);
   });
 
-  testWidgets('sorteia entre os filmes do gênero escolhido', (tester) async {
+  testWidgets('sorteia e abre o resultado com o filme do gênero escolhido', (
+    tester,
+  ) async {
     await abrirSorteador(tester);
 
     await tester.tap(_chip('Animação'));
@@ -40,6 +43,7 @@ void main() {
     await tester.tap(_botaoSortear);
     await tester.pumpAndSettle();
 
+    expect(find.byType(ResultadoSorteioPage), findsOneWidget);
     expect(find.text('Shrek'), findsOneWidget);
   });
 

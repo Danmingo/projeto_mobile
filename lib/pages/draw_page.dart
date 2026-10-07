@@ -7,8 +7,7 @@ import '../services/filme_scope.dart';
 import '../theme/app_colors.dart';
 import '../utils/sorteio.dart';
 import '../widgets/mensagem.dart';
-import '../widgets/poster_filme.dart';
-import 'detalhes_filme_page.dart';
+import 'resultado_sorteio_page.dart';
 
 /// Tela do sorteador: o usuário escolhe os critérios e sorteia um filme
 /// entre os cadastrados que atendem a todos eles.
@@ -27,9 +26,6 @@ class _DrawPageState extends State<DrawPage> {
   String? _classificacaoMaxima;
   bool _incluirAssistidos = false;
   var _autovalidar = AutovalidateMode.disabled;
-
-  /// Guarda só o id: se o filme for editado ou excluído, a tela acompanha.
-  String? _sorteadoId;
 
   @override
   void dispose() {
@@ -67,24 +63,12 @@ class _DrawPageState extends State<DrawPage> {
       return;
     }
 
-    final candidatos = _criterios.filtrar(FilmeScope.ler(context).filmes);
-    final sorteado = sortearFilme(candidatos, anteriorId: _sorteadoId);
-    if (sorteado == null) {
-      mostrarMensagem(
-        messenger,
-        'Nenhum filme atende aos critérios. Tente afrouxar os filtros.',
-        erro: true,
-      );
-      return;
-    }
-    setState(() => _sorteadoId = sorteado.id);
+    ResultadoSorteioPage.sortearEAbrir(context, _criterios);
   }
 
   @override
   Widget build(BuildContext context) {
     final service = FilmeScope.of(context);
-    final id = _sorteadoId;
-    final sorteado = id == null ? null : service.buscarPorId(id);
     final candidatos = _criterios.filtrar(service.filmes).length;
 
     return Scaffold(
@@ -119,10 +103,6 @@ class _DrawPageState extends State<DrawPage> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
                 children: [
-                  if (sorteado != null) ...[
-                    _ResultadoSorteio(filme: sorteado),
-                    const SizedBox(height: 20),
-                  ],
                   const _Titulo(
                     'Gêneros',
                     dica: 'Nenhum selecionado = todos os gêneros',
@@ -337,63 +317,6 @@ class _ContadorCandidatos extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _ResultadoSorteio extends StatelessWidget {
-  const _ResultadoSorteio({required this.filme});
-
-  final Filme filme;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      key: const ValueKey('resultado-sorteio'),
-      elevation: 0,
-      margin: EdgeInsets.zero,
-      color: AppColors.roxoClaro,
-      clipBehavior: Clip.antiAlias,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: InkWell(
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => DetalhesFilmePage(filme: filme),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              PosterFilme(poster: filme.poster),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Filme sorteado',
-                      style: TextStyle(color: AppColors.roxo, fontSize: 12),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      filme.titulo,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: AppColors.texto,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text('${filme.genero} • ${filme.ano}'),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right, color: AppColors.roxo),
-            ],
-          ),
-        ),
       ),
     );
   }
