@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:projeto_mobile/models/filme.dart';
+import 'package:projeto_mobile/services/filme_repository.dart';
 import 'package:projeto_mobile/services/filme_scope.dart';
 import 'package:projeto_mobile/services/filme_service.dart';
 
@@ -52,4 +56,21 @@ Future<void> escolherOpcao(
   await tester.pumpAndSettle();
   await tester.tap(find.text(opcao).last);
   await tester.pumpAndSettle();
+}
+
+/// Repositório em que o teste decide quando (e se) a leitura termina.
+class RepositorioControlado implements FilmeRepository {
+  var leitura = Completer<List<Filme>>();
+
+  @override
+  Future<List<Filme>> listar() => leitura.future;
+
+  @override
+  Future<Filme> inserir(Filme filme) => throw UnimplementedError();
+
+  @override
+  Future<void> atualizar(Filme filme) => throw UnimplementedError();
+
+  @override
+  Future<void> remover(String id) => throw UnimplementedError();
 }

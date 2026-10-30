@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'pages/login_page.dart';
 import 'pages/main_page.dart';
 import 'pages/register_page.dart';
+import 'services/filme_repository_sqlite.dart';
 import 'services/filme_scope.dart';
 import 'services/filme_service.dart';
 
@@ -21,7 +23,20 @@ class MoviePickApp extends StatefulWidget {
 }
 
 class _MoviePickAppState extends State<MoviePickApp> {
-  late final _filmeService = widget.filmeService ?? FilmeService.comExemplos();
+  late final _filmeService = widget.filmeService ?? _criarFilmeService();
+
+  /// No celular os filmes ficam no SQLite. O sqflite não roda no navegador,
+  /// então a versão web continua guardando só em memória.
+  static FilmeService _criarFilmeService() => kIsWeb
+      ? FilmeService.comExemplos()
+      : FilmeService(FilmeRepositorySqlite(iniciais: filmesDeExemplo));
+
+  @override
+  void initState() {
+    super.initState();
+    // Um serviço recebido pronto (testes) já vem com a lista carregada.
+    if (widget.filmeService == null) _filmeService.carregar();
+  }
 
   @override
   void dispose() {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../services/filme_scope.dart';
+import '../theme/app_colors.dart';
 import 'draw_page.dart';
 import 'home_page.dart';
 import 'meus_filmes_page.dart';
@@ -35,6 +37,14 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     const purple = Color(0xFF6C42C5);
+    final filmeService = FilmeScope.of(context);
+
+    if (filmeService.carregando) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (filmeService.falhouAoCarregar) {
+      return _ErroAoCarregar(onTentarDeNovo: filmeService.carregar);
+    }
 
     return Scaffold(
       body: PageView(
@@ -78,6 +88,46 @@ class _MainPageState extends State<MainPage> {
             label: 'Perfil',
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Aparece quando não foi possível ler os filmes salvos no aparelho.
+class _ErroAoCarregar extends StatelessWidget {
+  const _ErroAoCarregar({required this.onTentarDeNovo});
+
+  final VoidCallback onTentarDeNovo;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline_rounded,
+                size: 56,
+                color: AppColors.perigo,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Não foi possível carregar seus filmes.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                onPressed: onTentarDeNovo,
+                icon: const Icon(Icons.refresh_rounded),
+                label: const Text('Tentar novamente'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

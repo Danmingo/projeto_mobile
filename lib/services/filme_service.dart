@@ -21,6 +21,35 @@ class FilmeService extends ChangeNotifier {
   final FilmeRepository _repositorio;
   final List<Filme> _filmes;
 
+  bool _carregando = false;
+  Object? _erroAoCarregar;
+
+  bool get carregando => _carregando;
+  bool get falhouAoCarregar => _erroAoCarregar != null;
+
+  /// Lê os filmes guardados no repositório (ao abrir o app).
+  ///
+  /// Enquanto lê, [carregando] fica `true`; se der erro, [falhouAoCarregar]
+  /// fica `true` e as telas podem oferecer para tentar de novo.
+  Future<void> carregar() async {
+    if (_carregando) return;
+    _carregando = true;
+    _erroAoCarregar = null;
+    notifyListeners();
+    try {
+      final lidos = await _repositorio.listar();
+      _filmes
+        ..clear()
+        ..addAll(lidos);
+    } catch (erro) {
+      debugPrint('Erro ao carregar os filmes: $erro');
+      _erroAoCarregar = erro;
+    } finally {
+      _carregando = false;
+      notifyListeners();
+    }
+  }
+
   /// Filmes na ordem em que foram cadastrados.
   List<Filme> get filmes => List.unmodifiable(_filmes);
 

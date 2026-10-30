@@ -40,7 +40,9 @@ Future<void> _abrirMenuDaDuna(WidgetTester tester, String acao) async {
 
 void main() {
   testWidgets('login aparece e Cadastre-se abre Cadastro', (tester) async {
-    await tester.pumpWidget(const MoviePickApp());
+    await tester.pumpWidget(
+      MoviePickApp(filmeService: FilmeService.comExemplos()),
+    );
 
     expect(find.text('Bem-vindo!'), findsOneWidget);
     expect(find.text('Entrar'), findsOneWidget);
@@ -56,7 +58,9 @@ void main() {
 
   testWidgets('o app começa com os filmes de exemplo', (tester) async {
     usarTelaGrande(tester, largura: 800);
-    await tester.pumpWidget(const MoviePickApp());
+    await tester.pumpWidget(
+      MoviePickApp(filmeService: FilmeService.comExemplos()),
+    );
     await tester.tap(find.text('Entrar'));
     await tester.pumpAndSettle();
 

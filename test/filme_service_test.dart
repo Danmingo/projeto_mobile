@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:projeto_mobile/models/filme.dart';
 import 'package:projeto_mobile/services/filme_service.dart';
 
+import 'helpers.dart';
+
 const _rascunho = Filme(
   id: '',
   titulo: 'Duna',
@@ -92,5 +94,32 @@ void main() {
 
   test('alternar um filme inexistente falha', () {
     expect(() => service.alternarMinhaLista('nao-existe'), throwsArgumentError);
+  });
+
+  test('carregar traz os filmes do repositório', () async {
+    final repositorio = RepositorioControlado();
+    final service = FilmeService(repositorio);
+
+    final carregando = service.carregar();
+    expect(service.carregando, isTrue);
+
+    repositorio.leitura.complete([_rascunho.copyWith(id: '1')]);
+    await carregando;
+
+    expect(service.carregando, isFalse);
+    expect(service.falhouAoCarregar, isFalse);
+    expect(service.filmes.single.titulo, 'Duna');
+  });
+
+  test('carregar com erro marca falhouAoCarregar', () async {
+    final repositorio = RepositorioControlado()
+      ..leitura.completeError(Exception('banco corrompido'));
+    final service = FilmeService(repositorio);
+
+    await service.carregar();
+
+    expect(service.carregando, isFalse);
+    expect(service.falhouAoCarregar, isTrue);
+    expect(service.filmes, isEmpty);
   });
 }
