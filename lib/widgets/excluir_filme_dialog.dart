@@ -41,7 +41,12 @@ Future<bool> excluirFilme(BuildContext context, Filme filme) async {
 
   if (!await confirmarExclusao(context, filme.titulo)) return false;
 
-  await service.remover(filme.id);
+  try {
+    await service.remover(filme.id);
+  } catch (_) {
+    mostrarMensagem(messenger, 'Não foi possível excluir o filme.', erro: true);
+    return false;
+  }
   mostrarMensagem(messenger, 'Filme excluído com sucesso!');
   return true;
 }

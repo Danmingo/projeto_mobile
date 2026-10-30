@@ -9,7 +9,17 @@ Future<void> alternarMinhaLista(BuildContext context, Filme filme) async {
   final service = FilmeScope.ler(context);
   final messenger = ScaffoldMessenger.of(context);
 
-  final atualizado = await service.alternarMinhaLista(filme.id);
+  final Filme atualizado;
+  try {
+    atualizado = await service.alternarMinhaLista(filme.id);
+  } catch (_) {
+    mostrarMensagem(
+      messenger,
+      'Não foi possível atualizar a Minha Lista.',
+      erro: true,
+    );
+    return;
+  }
   mostrarMensagem(
     messenger,
     atualizado.naMinhaLista
@@ -23,7 +33,17 @@ Future<void> alternarAssistido(BuildContext context, Filme filme) async {
   final service = FilmeScope.ler(context);
   final messenger = ScaffoldMessenger.of(context);
 
-  final atualizado = await service.alternarAssistido(filme.id);
+  final Filme atualizado;
+  try {
+    atualizado = await service.alternarAssistido(filme.id);
+  } catch (_) {
+    mostrarMensagem(
+      messenger,
+      'Não foi possível atualizar o filme.',
+      erro: true,
+    );
+    return;
+  }
   mostrarMensagem(
     messenger,
     atualizado.assistido

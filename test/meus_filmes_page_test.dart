@@ -90,7 +90,7 @@ void main() {
   });
 
   testWidgets('avisa quando não há filmes cadastrados', (tester) async {
-    service = FilmeService();
+    service = FilmeService.emMemoria();
     await abrirLista(tester);
 
     expect(find.text('Nenhum filme cadastrado ainda'), findsOneWidget);
@@ -165,5 +165,50 @@ void main() {
     final shrek = service.filmes.firstWhere((f) => f.titulo == 'Shrek');
     expect(shrek.assistido, isTrue);
     expect(find.text('"Shrek" marcado como assistido.'), findsOneWidget);
+  });
+
+  group('quando o banco não consegue gravar', () {
+    // O RepositorioControlado lê normalmente, mas falha em toda gravação.
+    setUp(() async {
+      service = FilmeService(
+        RepositorioControlado()..leitura.complete(filmesDeExemplo),
+      );
+      await service.carregar();
+    });
+
+    testWidgets('excluir avisa o erro e mantém o filme', (tester) async {
+      await abrirLista(tester);
+
+      await escolherNoMenu(tester, 'Shrek', 'Excluir');
+      await tester.tap(find.widgetWithText(FilledButton, 'Excluir'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Não foi possível excluir o filme.'), findsOneWidget);
+      expect(find.text('Shrek'), findsOneWidget);
+      expect(service.filmes, hasLength(filmesDeExemplo.length));
+    });
+
+    testWidgets('Minha Lista avisa o erro e não muda o filme', (tester) async {
+      await abrirLista(tester);
+
+      await escolherNoMenu(tester, 'Shrek', 'Adicionar à Minha Lista');
+
+      expect(
+        find.text('Não foi possível atualizar a Minha Lista.'),
+        findsOneWidget,
+      );
+      final shrek = service.filmes.firstWhere((f) => f.titulo == 'Shrek');
+      expect(shrek.naMinhaLista, isFalse);
+    });
+
+    testWidgets('assistido avisa o erro e não muda o filme', (tester) async {
+      await abrirLista(tester);
+
+      await escolherNoMenu(tester, 'Shrek', 'Marcar como assistido');
+
+      expect(find.text('Não foi possível atualizar o filme.'), findsOneWidget);
+      final shrek = service.filmes.firstWhere((f) => f.titulo == 'Shrek');
+      expect(shrek.assistido, isFalse);
+    });
   });
 }

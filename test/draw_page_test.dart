@@ -121,7 +121,7 @@ void main() {
   });
 
   testWidgets('sem filmes cadastrados, pede para cadastrar', (tester) async {
-    service = FilmeService();
+    service = FilmeService.emMemoria();
     await abrirSorteador(tester);
 
     expect(
