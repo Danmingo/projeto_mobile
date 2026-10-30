@@ -1,18 +1,25 @@
 import 'package:flutter/foundation.dart';
 
 import '../models/filme.dart';
+import 'filme_repository.dart';
 
-/// Guarda os filmes do usuário em memória (Parte 1 do trabalho).
+/// Lista de filmes que as telas leem e alteram.
 ///
-/// Os métodos que alteram dados já retornam [Future] para que, na Parte 2,
-/// esta classe possa gravar em um banco de dados sem mudar as telas.
+/// Cada alteração é gravada primeiro no [FilmeRepository]; só depois de
+/// gravada a cópia em memória muda e as telas são avisadas. Assim, se a
+/// gravação falhar, a tela continua mostrando o que está de fato salvo.
 class FilmeService extends ChangeNotifier {
-  FilmeService({List<Filme> iniciais = const []}) : _filmes = [...iniciais];
+  FilmeService(this._repositorio) : _filmes = [];
 
-  factory FilmeService.comExemplos() => FilmeService(iniciais: filmesDeExemplo);
+  /// Só em memória e já com [iniciais] na lista (testes e versão web).
+  FilmeService.emMemoria([List<Filme> iniciais = const []])
+    : _repositorio = FilmeRepositoryMemoria(iniciais),
+      _filmes = [...iniciais];
 
+  factory FilmeService.comExemplos() => FilmeService.emMemoria(filmesDeExemplo);
+
+  final FilmeRepository _repositorio;
   final List<Filme> _filmes;
-  int _sequencia = 0;
 
   /// Filmes na ordem em que foram cadastrados.
   List<Filme> get filmes => List.unmodifiable(_filmes);
@@ -26,23 +33,21 @@ class FilmeService extends ChangeNotifier {
 
   /// Cadastra o filme com um id novo e devolve o filme salvo.
   Future<Filme> adicionar(Filme filme) async {
-    _sequencia++;
-    final novo = filme.copyWith(id: 'filme-$_sequencia');
+    final novo = await _repositorio.inserir(filme);
     _filmes.add(novo);
     notifyListeners();
     return novo;
   }
 
   Future<void> atualizar(Filme filme) async {
+    await _repositorio.atualizar(filme);
     final indice = _filmes.indexWhere((f) => f.id == filme.id);
-    if (indice == -1) {
-      throw ArgumentError('Filme ${filme.id} não encontrado');
-    }
-    _filmes[indice] = filme;
+    if (indice != -1) _filmes[indice] = filme;
     notifyListeners();
   }
 
   Future<void> remover(String id) async {
+    await _repositorio.remover(id);
     _filmes.removeWhere((f) => f.id == id);
     notifyListeners();
   }

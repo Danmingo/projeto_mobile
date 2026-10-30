@@ -19,7 +19,7 @@ Future<void> _preencherValido(WidgetTester tester) async {
 void main() {
   testWidgets('salvar vazio mostra os erros e não cadastra', (tester) async {
     usarTelaGrande(tester);
-    final service = FilmeService();
+    final service = FilmeService.emMemoria();
     await abrirTela(tester, service, const FilmeFormPage());
 
     await tester.tap(find.widgetWithText(ElevatedButton, 'Cadastrar filme'));
@@ -37,7 +37,7 @@ void main() {
 
   testWidgets('cadastra filme válido, avisa e fecha a tela', (tester) async {
     usarTelaGrande(tester);
-    final service = FilmeService();
+    final service = FilmeService.emMemoria();
     await abrirTela(tester, service, const FilmeFormPage());
 
     await _preencherValido(tester);
@@ -59,7 +59,7 @@ void main() {
 
   testWidgets('recusa nota fora do intervalo', (tester) async {
     usarTelaGrande(tester);
-    final service = FilmeService();
+    final service = FilmeService.emMemoria();
     await abrirTela(tester, service, const FilmeFormPage());
 
     await _preencherValido(tester);

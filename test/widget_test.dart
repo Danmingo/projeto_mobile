@@ -9,7 +9,7 @@ import 'helpers.dart';
 /// Abre a home com a lista de filmes vazia.
 Future<void> _openHome(WidgetTester tester) async {
   usarTelaGrande(tester, largura: 800);
-  await tester.pumpWidget(MoviePickApp(filmeService: FilmeService()));
+  await tester.pumpWidget(MoviePickApp(filmeService: FilmeService.emMemoria()));
   await tester.tap(find.text('Entrar'));
   await tester.pumpAndSettle();
 }

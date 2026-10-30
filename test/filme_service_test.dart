@@ -17,7 +17,7 @@ void main() {
   late int notificacoes;
 
   setUp(() {
-    service = FilmeService();
+    service = FilmeService.emMemoria();
     notificacoes = 0;
     service.addListener(() => notificacoes++);
   });

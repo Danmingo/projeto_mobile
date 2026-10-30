@@ -90,7 +90,7 @@ void main() {
   });
 
   testWidgets('avisa quando não há filmes cadastrados', (tester) async {
-    service = FilmeService();
+    service = FilmeService.emMemoria();
     await abrirLista(tester);
 
     expect(find.text('Nenhum filme cadastrado ainda'), findsOneWidget);
