@@ -6,6 +6,10 @@
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>O MoviePick usa a câmera para fotografar o pôster do filme.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>O MoviePick acessa suas fotos para você escolher o pôster do filme.</string>
 	<key>CFBundleDisplayName</key>
 	<string>Projeto Mobile</string>
 	<key>CFBundleExecutable</key>

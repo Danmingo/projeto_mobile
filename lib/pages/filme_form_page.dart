@@ -49,23 +49,60 @@ class _FilmeFormPageState extends State<FilmeFormPage> {
   }
 
   Future<void> _escolherPoster() async {
+    final origem = await _perguntarOrigem();
+    if (origem == null) return; // usuário fechou o menu
+
     try {
       final arquivo = await ImagePicker().pickImage(
-        source: ImageSource.gallery,
+        source: origem,
+        // Reduz a foto: um pôster não precisa de 12 megapixels, e a imagem
+        // fica guardada no banco junto com o filme.
         maxWidth: 800,
         imageQuality: 85,
       );
-      if (arquivo == null) return; // usuário fechou a galeria
+      if (arquivo == null) return; // usuário fechou a galeria ou a câmera
       final bytes = await arquivo.readAsBytes();
       if (mounted) setState(() => _poster = bytes);
     } catch (_) {
       if (!mounted) return;
       mostrarMensagem(
         ScaffoldMessenger.of(context),
-        'Não foi possível carregar a imagem.',
+        origem == ImageSource.camera
+            ? 'Não foi possível abrir a câmera.'
+            : 'Não foi possível carregar a imagem.',
         erro: true,
       );
     }
+  }
+
+  /// Pergunta se o pôster vem da galeria ou da câmera.
+  ///
+  /// A opção da câmera só aparece onde ela existe (no navegador, por
+  /// exemplo, não aparece). Devolve `null` se o usuário fechar o menu.
+  Future<ImageSource?> _perguntarOrigem() {
+    final temCamera = ImagePicker().supportsImageSource(ImageSource.camera);
+    return showModalBottomSheet<ImageSource>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: const Text('Escolher da galeria'),
+              onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+            ),
+            if (temCamera)
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: const Text('Tirar foto'),
+                onTap: () => Navigator.of(context).pop(ImageSource.camera),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<void> _salvar() async {
@@ -352,7 +389,7 @@ class _SeletorPoster extends StatelessWidget {
               const SizedBox(height: 8),
               OutlinedButton.icon(
                 onPressed: onEscolher,
-                icon: const Icon(Icons.photo_library_outlined),
+                icon: const Icon(Icons.add_a_photo_outlined),
                 label: Text(
                   poster == null ? 'Escolher imagem' : 'Trocar imagem',
                 ),
