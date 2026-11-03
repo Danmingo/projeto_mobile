@@ -1,0 +1,42 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:projeto_mobile/pages/profile_page.dart';
+import 'package:projeto_mobile/services/filme_service.dart';
+
+import 'helpers.dart';
+
+void main() {
+  testWidgets('mostra as estatísticas dos filmes de exemplo', (tester) async {
+    usarTelaGrande(tester);
+    // Exemplos: 5 filmes, 2 assistidos (Interestelar 169 min + Coringa 122).
+    await abrirTela(tester, FilmeService.comExemplos(), const ProfilePage());
+
+    expect(find.text('5'), findsOneWidget);
+    expect(find.text('2'), findsOneWidget);
+    expect(find.text('Você já assistiu 40% dos seus filmes'), findsOneWidget);
+    expect(find.text('4h 51min'), findsOneWidget);
+    expect(find.text('Ação'), findsOneWidget);
+    expect(find.text('8,2'), findsOneWidget);
+  });
+
+  testWidgets('atualiza quando um filme é marcado como assistido', (
+    tester,
+  ) async {
+    usarTelaGrande(tester);
+    final service = FilmeService.comExemplos();
+    await abrirTela(tester, service, const ProfilePage());
+
+    final shrek = service.filmes.firstWhere((f) => f.titulo == 'Shrek');
+    await service.alternarAssistido(shrek.id);
+    await tester.pump();
+
+    expect(find.text('Você já assistiu 60% dos seus filmes'), findsOneWidget);
+  });
+
+  testWidgets('biblioteca vazia mostra traços', (tester) async {
+    usarTelaGrande(tester);
+    await abrirTela(tester, FilmeService.emMemoria(), const ProfilePage());
+
+    expect(find.text('Você já assistiu 0% dos seus filmes'), findsOneWidget);
+    expect(find.text('—'), findsNWidgets(2));
+  });
+}
