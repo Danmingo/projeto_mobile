@@ -31,7 +31,7 @@ Aplicativo mobile para **organizar, cadastrar e sortear filmes**, com persistên
 ## Como instalar e executar
 
 ```bash
-git clone URL_DO_REPOSITORIO_PUBLICO
+git clone https://github.com/Danmingo/projeto_mobile
 cd projeto_mobile
 flutter doctor
 flutter pub get
@@ -71,32 +71,26 @@ flutter test
 - `lib/services/filme_service.dart`: operações sobre biblioteca de filmes.
 - `test/`: testes unitários e de widgets.
 
-## Persistência e segurança
+### Catálogo compartilhado e evolução do projeto
 
-O projeto utiliza dois arquivos de banco locais, criados automaticamente no primeiro uso:
+O MoviePick utiliza um catálogo de filmes compartilhado entre as contas cadastradas no mesmo dispositivo.
 
-- `moviepick.db`: filmes.
-- `moviepick_usuarios.db`: usuários, com colunas `id`, `nome`, `email`, `salt` e `senha_hash`.
+Essa estrutura é uma decisão de projeto: o aplicativo foi pensado para permitir que os usuários consultem filmes disponíveis em um catálogo comum, em vez de manter bibliotecas completamente isoladas.
 
-O cadastro armazena um hash da senha, e o login calcula novamente o hash para verificar a credencial. A sessão de acesso **não é persistida**, portanto o aplicativo solicita login ao ser aberto novamente. Não existem credenciais padrão.
+Nesta etapa acadêmica, usuários autenticados podem cadastrar, consultar, atualizar e excluir filmes (CRUD).
 
-**Limitação importante:** a biblioteca de filmes é compartilhada no mesmo aparelho entre contas locais, pois a tabela de filmes ainda não possui `usuario_id`. A autenticação protege o acesso à interface, mas **não implementa isolamento de dados entre usuários**.
+Como evolução futura, está previsto um sistema de permissões com diferentes perfis de acesso, permitindo que usuários comuns consultem os filmes e que administradores ou parceiros autorizados gerenciem o catálogo.
+
+Também está prevista a integração com um catálogo online, possibilitando que distribuidoras e produtoras divulguem seus lançamentos.
+
+Atualmente, o catálogo é compartilhado apenas entre contas locais do mesmo aparelho, sem sincronização entre dispositivos.
 
 ## Limitações / pontos pendentes
 
 - A versão **web** usa autenticação e filmes em memória: ao recarregar a página os dados não são preservados. O SQLite está direcionado a Android/iOS.
 - Recuperação de senha ainda não implementada; o botão exibe uma mensagem informativa.
-- Não há sincronização entre aparelhos, conta online, backup remoto ou recuperação de dados após desinstalar.
 - A persistência de login não foi implementada propositalmente: é necessário entrar novamente após reiniciar o app.
 - A integração final deve ser verificada no aparelho com `flutter analyze`, `flutter test` e `flutter run`.
-
-## Contribuições da equipe (preencher conforme os commits)
-
-| Integrante | Atividades realizadas |
-|---|---|
-| Daniel Moreira Cesar de Souza Mingolelli | **Preencher com as contribuições reais** |
-| Emanuel Caetano Chemin Goulart | **Preencher com as contribuições reais** |
-| Pedro Rosim Sunfeld Giordano | **Preencher com as contribuições reais** |
 
 ## Entrega
 
