@@ -21,6 +21,40 @@ void main() {
     expect(auth.autenticado, true);
     auth.sair();
     expect(auth.autenticado, false);
+
+    
+test('nao permite cadastro com nome invalido', () async {
+  final auth = AuthService(memory: true);
+  addTearDown(auth.dispose);
+
+  await expectLater(
+    auth.cadastrar('A', 'teste@email.com', 'senha12345'),
+    throwsA(isA<AuthException>()),
+  );
+});
+
+test('nao permite cadastro com senha curta', () async {
+  final auth = AuthService(memory: true);
+  addTearDown(auth.dispose);
+
+  await expectLater(
+    auth.cadastrar('Teste', 'teste@email.com', '123'),
+    throwsA(isA<AuthException>()),
+  );
+});
+
+test('nao permite login de usuario inexistente', () async {
+  final auth = AuthService(memory: true);
+  addTearDown(auth.dispose);
+
+  await expectLater(
+    auth.entrar('inexistente@email.com', 'senha12345'),
+    throwsA(isA<AuthException>()),
+  );
+
+  expect(auth.autenticado, false);
+});
+
   });
 
   test('cadastro permanece no SQLite depois de reabrir o banco', () async {
