@@ -118,9 +118,46 @@ class ProfilePage extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(height: 28),
+          OutlinedButton.icon(
+            onPressed: () => _sair(context),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: AppColors.perigo,
+              side: const BorderSide(color: AppColors.perigo),
+              minimumSize: const Size.fromHeight(48),
+            ),
+            icon: const Icon(Icons.logout_rounded),
+            label: const Text('Sair da conta'),
+          ),
         ],
       ),
     );
+  }
+
+  /// Confirma e volta ao login, apagando as telas abertas: depois de sair,
+  /// o botão voltar do celular não reabre a área do usuário.
+  Future<void> _sair(BuildContext context) async {
+    final navigator = Navigator.of(context);
+    final confirmou = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sair da conta?'),
+        content: const Text('Você vai voltar para a tela de login.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Sair'),
+          ),
+        ],
+      ),
+    );
+    if (confirmou ?? false) {
+      navigator.pushNamedAndRemoveUntil('/login', (_) => false);
+    }
   }
 }
 
