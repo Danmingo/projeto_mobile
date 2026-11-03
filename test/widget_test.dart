@@ -9,8 +9,7 @@ import 'helpers.dart';
 /// Abre a home com a lista de filmes vazia.
 Future<void> _openHome(WidgetTester tester) async {
   usarTelaGrande(tester, largura: 800);
-  await tester.pumpWidget(MoviePickApp(filmeService: FilmeService.emMemoria()));
-  await tester.tap(find.text('Entrar'));
+  await tester.pumpWidget(MoviePickApp(filmeService: FilmeService.emMemoria(), authService: await authAutenticadoParaTeste()));
   await tester.pumpAndSettle();
 }
 
@@ -59,10 +58,9 @@ void main() {
   testWidgets('o app começa com os filmes de exemplo', (tester) async {
     usarTelaGrande(tester, largura: 800);
     await tester.pumpWidget(
-      MoviePickApp(filmeService: FilmeService.comExemplos()),
+      MoviePickApp(filmeService: FilmeService.comExemplos(), authService: await authAutenticadoParaTeste()),
     );
-    await tester.tap(find.text('Entrar'));
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
     expect(find.text('${filmesDeExemplo.length}'), findsOneWidget);
     expect(find.text('Últimos adicionados'), findsOneWidget);

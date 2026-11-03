@@ -45,10 +45,9 @@ void main() {
   Future<void> abrirPerfilPeloApp(WidgetTester tester) async {
     usarTelaGrande(tester, largura: 800);
     await tester.pumpWidget(
-      MoviePickApp(filmeService: FilmeService.comExemplos()),
+      MoviePickApp(filmeService: FilmeService.comExemplos(), authService: await authAutenticadoParaTeste()),
     );
-    await tester.tap(find.text('Entrar'));
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
     await tester.tap(find.text('Perfil'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Sair da conta'));

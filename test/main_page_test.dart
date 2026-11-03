@@ -15,8 +15,7 @@ Future<void> _entrarCarregando(
   usarTelaGrande(tester, largura: 800);
   final service = FilmeService(repositorio);
   unawaited(service.carregar());
-  await tester.pumpWidget(MoviePickApp(filmeService: service));
-  await tester.tap(find.text('Entrar'));
+  await tester.pumpWidget(MoviePickApp(filmeService: service, authService: await authAutenticadoParaTeste()));
   // O indicador gira para sempre: pumpAndSettle nunca terminaria.
   await tester.pump();
   await tester.pump(const Duration(seconds: 1));

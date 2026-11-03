@@ -1,3 +1,4 @@
+import 'package:projeto_mobile/services/auth_service.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -73,4 +74,12 @@ class RepositorioControlado implements FilmeRepository {
 
   @override
   Future<void> remover(String id) => throw UnimplementedError();
+}
+
+/// Sessão de teste criada com credenciais válidas (sem banco do aparelho).
+Future<AuthService> authAutenticadoParaTeste() async {
+  final auth = AuthService(memory: true);
+  await auth.cadastrar('Usuário', 'teste@moviepick.local', 'SenhaTeste123');
+  await auth.entrar('teste@moviepick.local', 'SenhaTeste123');
+  return auth;
 }

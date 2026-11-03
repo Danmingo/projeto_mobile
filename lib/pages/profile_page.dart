@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/estatisticas_biblioteca.dart';
+import '../services/auth_scope.dart';
 import '../services/filme_scope.dart';
 import '../theme/app_colors.dart';
 
@@ -155,7 +156,9 @@ class ProfilePage extends StatelessWidget {
         ],
       ),
     );
+    if (!context.mounted) return;
     if (confirmou ?? false) {
+      AuthScope.ler(context).sair();
       navigator.pushNamedAndRemoveUntil('/login', (_) => false);
     }
   }
