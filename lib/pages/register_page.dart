@@ -45,6 +45,7 @@ class _RegisterPageState extends State<RegisterPage> {
     } on AuthException catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
+      // ignore: curly_braces_in_flow_control_structures
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro ao cadastrar. Tente novamente.')));
     } finally {

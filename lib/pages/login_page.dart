@@ -32,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
     } on AuthException catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
     } catch (_) {
+      // ignore: curly_braces_in_flow_control_structures
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Não foi possível realizar o login.')));
     } finally {
