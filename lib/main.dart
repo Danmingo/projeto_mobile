@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'pages/login_page.dart';
+import 'services/auth_scope.dart';
+import 'services/auth_service.dart';
 import 'pages/main_page.dart';
 import 'pages/register_page.dart';
 import 'services/filme_repository_sqlite.dart';
@@ -13,16 +15,18 @@ void main() {
 }
 
 class MoviePickApp extends StatefulWidget {
-  const MoviePickApp({super.key, this.filmeService});
+  const MoviePickApp({super.key, this.filmeService, this.authService});
 
   /// Permite que os testes comecem com outra lista; no app, usa os exemplos.
   final FilmeService? filmeService;
+  final AuthService? authService;
 
   @override
   State<MoviePickApp> createState() => _MoviePickAppState();
 }
 
 class _MoviePickAppState extends State<MoviePickApp> {
+  late final _authService = widget.authService ?? AuthService(memory: kIsWeb);
   late final _filmeService = widget.filmeService ?? _criarFilmeService();
 
   /// No celular os filmes ficam no SQLite. O sqflite não roda no navegador,
@@ -41,6 +45,10 @@ class _MoviePickAppState extends State<MoviePickApp> {
   @override
   void dispose() {
     if (widget.filmeService == null) _filmeService.dispose();
+    if (widget.authService == null) {
+      _authService.fechar();
+      _authService.dispose();
+    }
     super.dispose();
   }
 
@@ -58,12 +66,16 @@ class _MoviePickAppState extends State<MoviePickApp> {
         useMaterial3: true,
       ),
       // Deixa o FilmeService acessível em todas as telas e diálogos.
-      builder: (context, child) =>
-          FilmeScope(service: _filmeService, child: child!),
-      initialRoute: '/login',
+      builder: (context, child) => AuthScope(
+        service: _authService,
+        child: FilmeScope(service: _filmeService, child: child!),
+      ),
+      initialRoute: _authService.autenticado ? '/home' : '/login',
       routes: {
         '/login': (_) => const LoginPage(),
-        '/home': (_) => const MainPage(),
+        '/home': (context) => AuthScope.of(context).autenticado
+            ? const MainPage()
+            : const LoginPage(),
         '/cadastro': (_) => const RegisterPage(),
       },
     );

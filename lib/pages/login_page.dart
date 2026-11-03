@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/auth_scope.dart';
+import '../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -9,6 +11,33 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _obscurePassword = true;
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _login() async {
+    if (_loading) return;
+    setState(() => _loading = true);
+    try {
+      await AuthScope.ler(context).entrar(_emailController.text, _passwordController.text);
+      if (!mounted) return;
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (_) => false);
+    } on AuthException catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Não foi possível realizar o login.')));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +77,9 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 36),
               const _FieldLabel('E-mail'),
               const SizedBox(height: 8),
-              const TextField(
+              TextField(
+                key: const Key('login-email'),
+                controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(hintText: 'seu@email.com'),
               ),
@@ -56,6 +87,8 @@ class _LoginPageState extends State<LoginPage> {
               const _FieldLabel('Senha'),
               const SizedBox(height: 8),
               TextField(
+                key: const Key('login-password'),
+                controller: _passwordController,
                 obscureText: _obscurePassword,
                 decoration: InputDecoration(
                   hintText: 'Digite sua senha',
@@ -90,9 +123,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(
                 height: 52,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/home');
-                  },
+                  onPressed: _loading ? null : _login,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primary,
                     foregroundColor: Colors.white,
@@ -100,10 +131,9 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(14),
                     ),
                   ),
-                  child: const Text(
-                    'Entrar',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  child: _loading
+                      ? const CircularProgressIndicator()
+                      : const Text('Entrar', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
               const SizedBox(height: 22),

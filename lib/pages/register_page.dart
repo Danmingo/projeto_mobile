@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/auth_scope.dart';
+import '../services/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -28,15 +30,26 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
-  void _register() {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Cadastro será integrado à autenticação em uma próxima etapa.',
-        ),
-      ),
-    );
+  bool _loading = false;
+
+  Future<void> _register() async {
+    if (_loading || !(_formKey.currentState?.validate() ?? false)) return;
+    setState(() => _loading = true);
+    try {
+      await AuthScope.ler(context).cadastrar(
+        _nameController.text, _emailController.text, _passwordController.text);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Conta criada! Entre com seu e-mail e senha.')));
+      Navigator.pop(context);
+    } on AuthException catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+    } catch (_) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erro ao cadastrar. Tente novamente.')));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
   }
 
   @override
@@ -86,7 +99,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 TextFormField(
                   key: const Key('register-email'),
                   controller: _emailController,
-                  validator: _required,
+                  validator: (value) {
+                    if (value == null || !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value.trim())) {
+                      return 'Informe um e-mail válido.';
+                    }
+                    return null;
+                  },
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(labelText: 'E-mail'),
                 ),
@@ -94,7 +112,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 TextFormField(
                   key: const Key('register-password'),
                   controller: _passwordController,
-                  validator: _required,
+                  validator: (value) => value == null || value.length < 8
+                      ? 'Use pelo menos 8 caracteres.' : null,
                   obscureText: true,
                   decoration: const InputDecoration(labelText: 'Senha'),
                 ),
@@ -119,8 +138,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 SizedBox(
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: _register,
-                    child: const Text('Cadastrar'),
+                    onPressed: _loading ? null : _register,
+                    child: _loading ? const CircularProgressIndicator()
+                        : const Text('Cadastrar'),
                   ),
                 ),
                 const SizedBox(height: 18),

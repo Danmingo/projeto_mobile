@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../services/filme_scope.dart';
+import '../services/auth_scope.dart';
 import 'detalhes_filme_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -40,7 +41,7 @@ class HomePage extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            'Olá, Usuário! 👋',
+                            'Olá, ${AuthScope.of(context).usuario?.nome ?? 'Usuário'}! 👋',
                             style: theme.textTheme.headlineSmall?.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
